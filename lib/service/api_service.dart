@@ -41,8 +41,11 @@ class APIService{
   }
 
   Future getNews({required String emotions}) async {
+
+    // Map weather condition to the corresponding emotion
+    String emotion = mapWeatherToEmotion(emotions);
     final response = await http.get(
-        Uri.parse('https://newsapi.org/v2/everything?q=$emotions&apiKey=5f3b0927a73d45d19e5201e3f779da4f'));
+        Uri.parse('https://newsapi.org/v2/everything?q=$emotion&apiKey=5f3b0927a73d45d19e5201e3f779da4f'));
     try {
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
@@ -56,6 +59,46 @@ class APIService{
       rethrow;
     }
   }
+ String mapWeatherToEmotion(String weatherCondition) {
+   switch (weatherCondition.toLowerCase()) {
+   // Depressing weather conditions
+     case 'cold':
+     case 'mist':
+     case 'drizzle':
+     case 'rain':
+     case 'snow':
+     case 'thunderstorm':
+       return 'depressing';
+
+   // Fear-inducing weather conditions
+     case 'hot':
+     case 'extreme heat':
+     case 'haze':
+     case 'dust':
+     case 'sandstorm':
+     case 'tornado':
+       return 'fear';
+
+   // Happy weather conditions
+     case 'cool':
+     case 'clear':
+     case 'sunny':
+     case 'partly cloudy':
+       return 'happiness';
+
+   // Neutral weather conditions
+     case 'clouds':
+     case 'fog':
+     case 'breeze':
+     case 'overcast':
+       return 'neutral';
+
+   // Default fallback if condition is unrecognized
+     default:
+       return 'neutral';
+   }
+ }
+
  Future getNewscategory({required String category}) async {
    final response = await http.get(
        Uri.parse('https://newsapi.org/v2/top-headlines?category=$category&apiKey=5f3b0927a73d45d19e5201e3f779da4f'));
